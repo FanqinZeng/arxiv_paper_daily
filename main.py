@@ -5,20 +5,42 @@ import os
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Arxiv Daily")
-    parser.add_argument("--categories", nargs="+", help="categories", required=True)
+    parser.add_argument(
+        "--categories",
+        nargs="+",
+        help="arXiv categories",
+        default=["cs.AI", "cs.CL", "cs.LG", "cs.IR"],
+    )
     parser.add_argument("--max_paper_num", type=int, help="max_paper_num", default=60)
     parser.add_argument(
         "--max_entries", type=int, help="max_entries to get from arxiv", default=100
     )
-    parser.add_argument("--provider", type=str, help="provider", required=True)
-    parser.add_argument("--model", type=str, help="model", required=None)
+    parser.add_argument(
+        "--provider", type=str, help="provider", default="OpenAI"
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        help="model name (env: GLM_MODEL)",
+        default=os.environ.get("GLM_MODEL", "glm-4.5-air"),
+    )
     parser.add_argument(
         "--save", action="store_true", help="Save the email content to a file."
     )
     parser.add_argument("--save_dir", type=str, default="./arxiv_history")
 
-    parser.add_argument("--base_url", type=str, help="base_url", default=None)
-    parser.add_argument("--api_key", type=str, help="api_key", default=None)
+    parser.add_argument(
+        "--base_url",
+        type=str,
+        help="base_url",
+        default="https://open.bigmodel.cn/api/paas/v4/",
+    )
+    parser.add_argument(
+        "--api_key",
+        type=str,
+        help="API key (env: GLM_API_KEY)",
+        default=os.environ.get("GLM_API_KEY"),
+    )
 
     parser.add_argument(
         "--description",
@@ -27,12 +49,37 @@ if __name__ == "__main__":
         default="description.txt",
     )
 
-    parser.add_argument("--smtp_server", type=str, help="SMTP server")
-    parser.add_argument("--smtp_port", type=int, help="SMTP port")
-    parser.add_argument("--sender", type=str, help="Sender email address")
-    parser.add_argument("--receiver", type=str, help="Receiver email address")
-    parser.add_argument("--sender_password", type=str, help="Sender email password")
-    parser.add_argument("--temperature", type=float, help="Temperature", default=0.7)
+    parser.add_argument(
+        "--smtp_server",
+        type=str,
+        help="SMTP server (env: SMTP_SERVER)",
+        default=os.environ.get("SMTP_SERVER"),
+    )
+    parser.add_argument(
+        "--smtp_port",
+        type=int,
+        help="SMTP port (env: SMTP_PORT)",
+        default=int(os.environ.get("SMTP_PORT", "465")),
+    )
+    parser.add_argument(
+        "--sender",
+        type=str,
+        help="Sender email (env: SMTP_SENDER)",
+        default=os.environ.get("SMTP_SENDER"),
+    )
+    parser.add_argument(
+        "--receiver",
+        type=str,
+        help="Receiver email (env: SMTP_RECEIVER)",
+        default=os.environ.get("SMTP_RECEIVER"),
+    )
+    parser.add_argument(
+        "--sender_password",
+        type=str,
+        help="Sender email password (env: SMTP_PASSWORD)",
+        default=os.environ.get("SMTP_PASSWORD"),
+    )
+    parser.add_argument("--temperature", type=float, help="Temperature", default=0.3)
 
     parser.add_argument("--num_workers", type=int, help="Number of workers", default=4)
     parser.add_argument(
@@ -41,15 +88,26 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # Validate required settings
     if not (args.provider == "Ollama" or args.provider == "ollama"):
-        assert args.base_url is not None, (
-            "base_url is required for SiliconFlow and OpenAI"
-        )
         assert args.api_key is not None, (
-            "api_key is required for SiliconFlow and OpenAI"
+            "api_key is required. Set GLM_API_KEY env var or pass --api_key."
         )
 
-    with open(args.description, "r") as f:
+    assert args.smtp_server is not None, (
+        "SMTP server is required. Set SMTP_SERVER env var or pass --smtp_server."
+    )
+    assert args.sender is not None, (
+        "Sender email is required. Set SMTP_SENDER env var or pass --sender."
+    )
+    assert args.receiver is not None, (
+        "Receiver email is required. Set SMTP_RECEIVER env var or pass --receiver."
+    )
+    assert args.sender_password is not None, (
+        "Sender password is required. Set SMTP_PASSWORD env var or pass --sender_password."
+    )
+
+    with open(args.description, "r", encoding="utf-8") as f:
         args.description = f.read()
 
     # Test LLM availability
@@ -66,6 +124,7 @@ if __name__ == "__main__":
         args.provider == "OpenAI"
         or args.provider == "openai"
         or args.provider == "SiliconFlow"
+        or args.provider == "siliconflow"
     ):
         from llm.GPT import GPT
 

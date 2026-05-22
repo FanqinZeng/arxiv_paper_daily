@@ -1,6 +1,5 @@
 tqdm
 loguru
-# For ollama
-ollama
-# For openai
+requests
+beautifulsoup4
 openai

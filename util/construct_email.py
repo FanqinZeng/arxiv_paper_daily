@@ -11,22 +11,130 @@ framework = """
 <!DOCTYPE HTML>
 <html>
 <head>
+  <meta charset="utf-8">
   <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
     .star-wrapper {
-      font-size: 1.3em; /* 调整星星大小 */
-      line-height: 1; /* 确保垂直对齐 */
+      font-size: 1.3em;
+      line-height: 1;
       display: inline-flex;
-      align-items: center; /* 保持对齐 */
+      align-items: center;
     }
     .half-star {
       display: inline-block;
-      width: 0.5em; /* 半颗星的宽度 */
+      width: 0.5em;
       overflow: hidden;
       white-space: nowrap;
       vertical-align: middle;
     }
     .full-star {
       vertical-align: middle;
+    }
+    .paper-block {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      background-color: #ffffff;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .paper-title-cn {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0 0 4px 0;
+    }
+    .paper-title-en {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 12px 0;
+      font-style: italic;
+    }
+    .paper-meta {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 12px;
+    }
+    .paper-field {
+      margin: 6px 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .paper-field strong {
+      color: #374151;
+    }
+    .score-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .score-high { background: #dcfce7; color: #166534; }
+    .score-medium { background: #fef3c7; color: #92400e; }
+    .score-low { background: #fee2e2; color: #991b1b; }
+    .priority-high { background: #dbeafe; color: #1e40af; }
+    .priority-medium { background: #fef3c7; color: #92400e; }
+    .priority-low { background: #f3f4f6; color: #6b7280; }
+    .arxiv-link {
+      display: inline-block;
+      text-decoration: none;
+      font-size: 13px;
+      color: #2563eb;
+    }
+    .pdf-btn {
+      display: inline-block;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #dc2626;
+      padding: 6px 14px;
+      border-radius: 4px;
+    }
+    .overview-section {
+      border-radius: 16px;
+      padding: 24px 28px;
+      background: linear-gradient(135deg, rgba(66,133,244,0.12), rgba(219,68,55,0.08));
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      margin-bottom: 32px;
+    }
+    .overview-section h2 {
+      margin: 0 0 12px 0;
+      font-size: 20px;
+      color: #1f2937;
+      border-bottom: 2px solid rgba(59,130,246,0.2);
+      padding-bottom: 8px;
+    }
+    .overview-section p {
+      margin: 4px 0;
+      line-height: 1.7;
+      color: #374151;
+      font-size: 14px;
+    }
+    .overview-stats {
+      display: flex;
+      gap: 24px;
+      margin: 12px 0;
+    }
+    .overview-stat {
+      text-align: center;
+    }
+    .overview-stat-num {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+    .overview-stat-label {
+      font-size: 12px;
+      color: #6b7280;
+    }
+    .top3-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .top3-item:last-child {
+      border-bottom: none;
     }
   </style>
 </head>
@@ -37,7 +145,7 @@ framework = """
 </div>
 
 <br><br>
-<div>
+<div style="font-size: 12px; color: #999;">
 To unsubscribe, remove your email in your Github Action setting.
 </div>
 
@@ -47,7 +155,7 @@ To unsubscribe, remove your email in your Github Action setting.
 
 
 def get_empty_html():
-    block_template = """
+    return """
   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 8px; padding: 16px; background-color: #f9f9f9;">
   <tr>
     <td style="font-size: 20px; font-weight: bold; color: #333;">
@@ -55,175 +163,92 @@ def get_empty_html():
     </td>
   </tr>
   """
-    return block_template
 
 
-def get_summary_html(content: str) -> str:
-    style = """
-    <style>
-      .summary-wrapper {
-        border-radius: 16px;
-        padding: 24px 28px;
-        background: linear-gradient(135deg, rgba(66,133,244,0.12), rgba(219,68,55,0.08));
-        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-        margin-bottom: 32px;
-        font-family: 'Helvetica Neue', Arial, sans-serif;
-      }
-      .summary-section {
-        margin-bottom: 24px;
-      }
-      .summary-section h2 {
-        margin: 0 0 12px 0;
-        font-size: 22px;
-        color: #1f2937;
-        border-bottom: 2px solid rgba(59,130,246,0.2);
-        padding-bottom: 8px;
-      }
-      .summary-section p {
-        margin: 0;
-        line-height: 1.7;
-        color: #374151;
-        font-size: 15px;
-      }
-      .summary-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: grid;
-        gap: 16px;
-      }
-      .summary-item {
-        padding: 16px 18px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.85);
-        border: 1px solid rgba(229, 231, 235, 0.8);
-      }
-      .summary-item__header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .summary-item__title {
-        font-size: 17px;
-        font-weight: 600;
-        color: #1d4ed8;
-        margin: 0;
-      }
-      .summary-pill {
-        display: inline-flex;
-        align-items: center;
-        padding: 3px 10px;
-        border-radius: 999px;
-        background: rgba(59, 130, 246, 0.12);
-        color: #1d4ed8;
-        font-size: 12px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-      }
-      .summary-item p {
-        margin: 10px 0 0 0;
-        color: #4b5563;
-        font-size: 14px;
-        line-height: 1.6;
-      }
-      .summary-item strong {
-        color: #111827;
-      }
-    </style>
-    """
-    return f"{style}\n<div class=\"summary-wrapper\">\n{content}\n</div>"
-
-
-def render_summary_sections(summary_data: dict) -> str:
-    """Convert structured summary data into formatted HTML block."""
-    trend_summary = summary_data.get("trend_summary", "暂无趋势信息")
-    additional_observation = summary_data.get("additional_observation", "暂无")
-
-    recommendations = summary_data.get("recommendations", [])
-    recommendations_html = []
-    if isinstance(recommendations, list):
-        for item in recommendations:
-            if not isinstance(item, dict):
-                continue
-            title = item.get("title")
-            if not title:
-                continue
-            relevance = item.get("relevance_label", "相关性未知")
-            reason = item.get("recommend_reason", "未提供推荐理由")
-            contribution = item.get("key_contribution", "未提供关键贡献")
-            recommendations_html.append(
-                "  <li class=\"summary-item\">\n"
-                "    <div class=\"summary-item__header\">"
-                f"<span class=\"summary-item__title\">{title}</span>"
-                f"<span class=\"summary-pill\">{relevance}</span></div>\n"
-                f"    <p><strong>推荐理由：</strong>{reason}</p>\n"
-                f"    <p><strong>关键贡献：</strong>{contribution}</p>\n"
-                "  </li>"
-            )
-
-    sections = [
-        "<div class=\"summary-section\">",
-        "  <h2>今日研究趋势</h2>",
-        f"  <p>{trend_summary}</p>",
-        "</div>",
-        "<div class=\"summary-section\">",
-        "  <h2>重点推荐</h2>",
-    ]
-    if recommendations_html:
-        sections.append("  <ol class=\"summary-list\">")
-        sections.extend(recommendations_html)
-        sections.append("  </ol>")
+def render_overview_html(total_scanned, total_selected, top3, trend_summary):
+    """Render the daily overview section at the top of the email."""
+    top3_html = ""
+    if top3:
+        for i, item in enumerate(top3):
+            title = item.get("title", "")
+            reason = item.get("reason", "")
+            top3_html += f'<div class="top3-item"><strong>Top {i+1}:</strong> {title}<br><span style="color:#6b7280;font-size:13px;">{reason}</span></div>'
     else:
-        sections.append("  <p>暂无推荐。</p>")
-    sections.append("</div>")
-    sections.extend(
-        [
-            "<div class=\"summary-section\">",
-            "  <h2>补充观察</h2>",
-            f"  <p>{additional_observation}</p>",
-            "</div>",
-        ]
-    )
+        top3_html = "<p>暂无 Top 3 推荐。</p>"
 
-    final_html = "\n".join(sections)
-    return get_summary_html(final_html)
-
-
-def get_block_html(title: str, rate: str, arxiv_id: str, abstract: str, pdf_url: str):
-    block_template = """
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 8px; padding: 16px; background-color: #f9f9f9;">
-    <tr>
-        <td style="font-size: 20px; font-weight: bold; color: #333;">
-            {title}
-        </td>
-    </tr>
-    <tr>
-        <td style="font-size: 14px; color: #333; padding: 8px 0;">
-            <strong>Relevance:</strong> {rate}
-        </td>
-    </tr>
-    <tr>
-        <td style="font-size: 14px; color: #333; padding: 8px 0;">
-            <strong>arXiv ID:</strong> {arxiv_id}
-        </td>
-    </tr>
-    <tr>
-        <td style="font-size: 14px; color: #333; padding: 8px 0;">
-            <strong>TLDR:</strong> {abstract}
-        </td>
-    </tr>
-
-    <tr>
-        <td style="padding: 8px 0;">
-            <a href="{pdf_url}" style="display: inline-block; text-decoration: none; font-size: 14px; font-weight: bold; color: #fff; background-color: #d9534f; padding: 8px 16px; border-radius: 4px;">PDF</a>
-        </td>
-    </tr>
-</table>
+    return f"""
+<div class="overview-section">
+  <h2>Daily Overview</h2>
+  <div class="overview-stats">
+    <div class="overview-stat">
+      <div class="overview-stat-num">{total_scanned}</div>
+      <div class="overview-stat-label">Scanned</div>
+    </div>
+    <div class="overview-stat">
+      <div class="overview-stat-num">{total_selected}</div>
+      <div class="overview-stat-label">Selected</div>
+    </div>
+  </div>
+  <h2>Top 3 Recommendations</h2>
+  {top3_html}
+  <h2>Trend Summary</h2>
+  <p>{trend_summary}</p>
+</div>
 """
-    return block_template.format(
-        title=title, rate=rate, arxiv_id=arxiv_id, abstract=abstract, pdf_url=pdf_url
-    )
+
+
+def get_block_html(
+    index,
+    chinese_title,
+    english_title,
+    rate,
+    arxiv_id,
+    authors,
+    contribution,
+    method_summary,
+    relevance_reason,
+    relevance_score,
+    priority,
+    pdf_url,
+):
+    # Score badge color
+    if relevance_score >= 7:
+        score_class = "score-high"
+    elif relevance_score >= 4:
+        score_class = "score-medium"
+    else:
+        score_class = "score-low"
+
+    # Priority badge
+    priority_lower = priority.lower() if priority else "medium"
+    if priority_lower == "high":
+        priority_class = "priority-high"
+    elif priority_lower == "medium":
+        priority_class = "priority-medium"
+    else:
+        priority_class = "priority-low"
+
+    arxiv_link = f"https://arxiv.org/abs/{arxiv_id}"
+
+    return f"""
+<div class="paper-block">
+  <div class="paper-title-cn">{index}. {chinese_title}</div>
+  <div class="paper-title-en">{english_title}</div>
+  <div class="paper-meta">
+    <strong>Authors:</strong> {authors} &nbsp;|&nbsp;
+    <strong>arXiv:</strong> <a class="arxiv-link" href="{arxiv_link}">{arxiv_id}</a> &nbsp;|&nbsp;
+    <span class="score-badge {score_class}">Score: {relevance_score}/10</span>
+    <span class="score-badge {priority_class}">{priority}</span>
+    {rate}
+  </div>
+  <div class="paper-field"><strong>Core Contribution:</strong> {contribution}</div>
+  <div class="paper-field"><strong>Method:</strong> {method_summary}</div>
+  <div class="paper-field"><strong>Why Relevant:</strong> {relevance_reason}</div>
+  <div style="margin-top: 10px;">
+    <a class="pdf-btn" href="{pdf_url}">PDF</a>
+  </div>
+</div>
+"""
 
 
 def get_stars(score: float):

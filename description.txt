@@ -1,10 +1,24 @@
-I am working on the research area of computer vision and natural language processing. 
-Specifically, I am interested in the following fieds:
-1. Object detection
-2. AIGC (AI Generated Content)
-3. Multimodal Large Language Models
+I am interested in:
+- Large Language Models (LLM) and their applications
+- Retrieval-Augmented Generation (RAG)
+- Information Extraction and Natural Language Processing
+- AI Agents and tool-use
+- Multimodal models (vision-language)
 
-I'm not interested in the following fields:
-1. 3D Vision
-2. Robotics
-3. Low-level Vision
+I am not interested in:
+- Pure theoretical math proofs
+- Hardware-specific optimizations (FPGA, ASIC)
+- Low-level image processing without ML
+- Classical robotics control
+
+Preferred paper types:
+- Empirical studies with strong experimental results
+- Novel architectures or training methods
+- Comprehensive benchmarks or surveys
+- Practical applications of LLMs
+
+Keywords:
+- large language model, LLM, GPT, retrieval-augmented generation, RAG, agent, tool use, multimodal, vision-language, instruction tuning, RLHF, fine-tuning, prompt engineering, reasoning, chain-of-thought, embedding, dense retrieval, semantic search
+
+Excluded keywords:
+- FPGA, ASIC, hardware accelerator, 3D reconstruction only, pure mathematics, classical control theory
