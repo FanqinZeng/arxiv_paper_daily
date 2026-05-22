@@ -33,7 +33,7 @@ if __name__ == "__main__":
         "--base_url",
         type=str,
         help="base_url",
-        default="https://open.bigmodel.cn/api/paas/v4/",
+        default="https://open.bigmodel.cn/api/coding/paas/v4",
     )
     parser.add_argument(
         "--api_key",

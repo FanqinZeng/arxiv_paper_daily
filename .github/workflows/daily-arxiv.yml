@@ -39,7 +39,7 @@ jobs:
             --categories cs.AI cs.CL cs.LG cs.IR \
             --provider OpenAI \
             --model "${GLM_MODEL:-glm-4.5-air}" \
-            --base_url "https://open.bigmodel.cn/api/paas/v4/" \
+            --base_url "https://open.bigmodel.cn/api/coding/paas/v4" \
             --api_key "$GLM_API_KEY" \
             --smtp_server "$SMTP_SERVER" \
             --smtp_port "${SMTP_PORT:-465}" \

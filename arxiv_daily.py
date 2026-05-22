@@ -449,7 +449,7 @@ if __name__ == "__main__":
 
     arxiv_daily = ArxivDaily(
         categories, max_entries, max_paper_num, provider, model,
-        "https://open.bigmodel.cn/api/paas/v4/", "your-api-key", description,
+        "https://open.bigmodel.cn/api/coding/paas/v4", "your-api-key", description,
         4, 0.3, "./arxiv_history"
     )
     recommendations = arxiv_daily.get_recommendation()
