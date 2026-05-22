@@ -1,24 +1,47 @@
-I am interested in:
-- Large Language Models (LLM) and their applications
-- Retrieval-Augmented Generation (RAG)
-- Information Extraction and Natural Language Processing
-- AI Agents and tool-use
-- Multimodal models (vision-language)
+I am interested in embodied agents, especially agents that combine perception, language understanding, task planning, and physical action in simulated or real robotic environments.
 
-I am not interested in:
-- Pure theoretical math proofs
-- Hardware-specific optimizations (FPGA, ASIC)
-- Low-level image processing without ML
-- Classical robotics control
+My main focus is on embodied Agent systems for robotics. I want to track papers about Vision-Language-Action models, World Action Models, world models for embodied AI, long-horizon task planning, robot manipulation, mobile manipulation, humanoid agents, and generalist robot policies.
 
-Preferred paper types:
-- Empirical studies with strong experimental results
-- Novel architectures or training methods
-- Comprehensive benchmarks or surveys
-- Practical applications of LLMs
+I am especially interested in:
+1. Embodied Agent architectures that connect LLMs/VLMs with robot control policies.
+2. Vision-Language-Action (VLA) models for robotic manipulation, mobile manipulation, and generalist robot control.
+3. World Action Models (WAMs), embodied world models, action-conditioned video prediction, and future imagination for robot planning.
+4. On-Policy Distillation (OPD), VLA post-training, offline-to-online robot learning, interactive post-training, and self-improving embodied agents.
+5. Long-horizon embodied task planning, hierarchical planning, skill decomposition, replanning, and closed-loop execution.
+6. Affordance learning, 3D scene understanding, open-vocabulary embodied perception, object-centric perception, and part-level manipulation.
+7. Robot learning datasets, teleoperation data, simulation-to-real transfer, synthetic environments, and benchmark evaluation.
+8. Real-world deployment of embodied agents, including low-latency inference, on-device VLA models, ROS2 integration, safety, and robust policy evaluation.
 
-Keywords:
-- large language model, LLM, GPT, retrieval-augmented generation, RAG, agent, tool use, multimodal, vision-language, instruction tuning, RLHF, fine-tuning, prompt engineering, reasoning, chain-of-thought, embedding, dense retrieval, semantic search
+I am particularly interested in papers related to:
+- Embodied Agent
+- Embodied AI
+- Vision-Language-Action Model
+- VLA
+- World Action Model
+- WAM
+- Embodied World Model
+- Robot Foundation Model
+- Generalist Robot Policy
+- On-Policy Distillation
+- VLA-OPD
+- Robot Manipulation
+- Mobile Manipulation
+- Humanoid Robot
+- Long-horizon Planning
+- Task and Motion Planning
+- Affordance Learning
+- Sim-to-Real
+- Robot Policy Evaluation
 
-Excluded keywords:
-- FPGA, ASIC, hardware accelerator, 3D reconstruction only, pure mathematics, classical control theory
+I prefer papers that provide:
+1. New architectures for embodied agents.
+2. New VLA or WAM models.
+3. Methods that improve policy learning, post-training, robustness, or generalization.
+4. Strong experiments on embodied benchmarks such as LIBERO, RoboTwin, CALVIN, RLBench, ManiSkill, Habitat, AI2-THOR, ALFRED, BEHAVIOR, Meta-World, RoboSuite, or real robots.
+5. Open-source code, datasets, pretrained models, or reproducible benchmarks.
+
+I am less interested in:
+1. Pure large language model papers without embodiment, robotics, action, or environment interaction.
+2. Pure computer vision papers that do not connect to embodied perception or robot action.
+3. Pure reinforcement learning theory without robot or embodied agent experiments.
+4. Medical imaging, autonomous driving-only VLA, recommendation systems, or finance agents unless the method is clearly transferable to embodied agents.

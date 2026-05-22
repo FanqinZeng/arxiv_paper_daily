@@ -18,7 +18,8 @@ for var in GLM_API_KEY SMTP_SERVER SMTP_SENDER SMTP_RECEIVER SMTP_PASSWORD; do
 done
 
 python main.py \
-  --categories cs.AI cs.CL cs.LG cs.IR \
+  --categories cs.AI cs.RO cs.LG cs.CV cs.CL cs.MA cs.SY cs.HC \
+  --max_paper_num 20 \
   --provider OpenAI \
   --model "${GLM_MODEL:-glm-4.5-air}" \
   --base_url "https://open.bigmodel.cn/api/coding/paas/v4" \

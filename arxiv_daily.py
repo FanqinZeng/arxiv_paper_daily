@@ -42,11 +42,14 @@ class ArxivDaily:
         self.run_datetime = datetime.now(timezone.utc)
         self.run_date = self.run_datetime.strftime("%Y-%m-%d")
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        self.cache_dir = os.path.join(base_dir, save_dir, self.run_date, "json") if save_dir else None
+        self.cache_dir = (
+            os.path.join(base_dir, save_dir, self.run_date, "json")
+            if save_dir
+            else None
+        )
         if self.cache_dir:
             os.makedirs(self.cache_dir, exist_ok=True)
 
-        # Load dedup history
         self.history_path = os.path.join(base_dir, self.HISTORY_FILE)
         self.pushed_ids = self._load_history()
 
@@ -61,7 +64,6 @@ class ArxivDaily:
             time.sleep(sleep_time)
         self.total_fetched = total_fetched
 
-        # Deduplicate against history
         before = sum(len(v) for v in self.papers.values())
         self._dedup_papers()
         after = sum(len(v) for v in self.papers.values())
@@ -104,37 +106,55 @@ class ArxivDaily:
                 if p["arXiv_id"] not in self.pushed_ids
             ]
 
+    def _inference(self, prompt):
+        try:
+            return self.model.inference(prompt, temperature=self.temperature)
+        except TypeError:
+            return self.model.inference(prompt)
+
     def get_response(self, title, abstract):
         prompt = f"""
-你是一个有帮助的学术研究助手，可以帮助我构建每日论文推荐系统。
-以下是我最近研究领域的描述：
+You are an academic paper recommendation assistant. Rank each arXiv paper for a daily reading list about embodied agents for robotics.
+
+User research interests:
 {self.description}
 
-以下是我从昨天的 arXiv 爬取的论文，我为你提供了标题和摘要：
-标题: {title}
-摘要: {abstract}
+Paper to evaluate:
+Title: {title}
+Abstract: {abstract}
 
-请按以下要求分析这篇论文，并严格按照 JSON 格式返回：
+Primary target theme:
+Embodied Agent with VLA/WAM/OPD for robotic planning and manipulation. Prioritize papers about embodied agents, Vision-Language-Action models, World Action Models, embodied world models, On-Policy Distillation or VLA post-training, long-horizon task planning, robot manipulation, mobile manipulation, humanoid agents, sim-to-real transfer, robot benchmarks, and real-world robot deployment.
+
+Scoring rubric:
+- 9-10: Directly useful for embodied agents, VLA, WAM, OPD/post-training, robot planning, or robot manipulation, with strong experiments, real-robot validation, open-source assets, or important benchmark results.
+- 7-8: Highly relevant to robot policies, embodied planning, world models, sim-to-real, affordance learning, embodied perception, or benchmark evaluation.
+- 5-6: Partially relevant and potentially transferable to embodied agents, but not directly evaluated on robotics or embodied interaction.
+- 3-4: Generic agent, VLM/LLM, CV, or RL paper with weak connection to embodied closed-loop action.
+- 0-2: Unrelated to embodied AI, such as pure LLM, medical imaging, finance, recommendation systems, hardware-only optimization, or pure theory.
+
+Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanatory text values.
 {{
     "chinese_title": "<论文标题的中文翻译>",
-    "english_title": "<英文原始标题，即上面的标题>",
-    "authors": "<作者列表，用逗号分隔，从摘要中无法获取则填'未知'>",
-    "contribution": "<一句话概括论文的核心贡献>",
-    "method_summary": "<方法摘要，简要描述论文提出的方法或技术路线>",
-    "relevance_reason": "<为什么这篇论文与我的研究兴趣相关>",
-    "relevance": <相关性评分，0-10的整数，0完全不相关，10高度相关>,
-    "priority": "<阅读优先级：High / Medium / Low>"
-}}
+    "english_title": "<original English title>",
+    "authors": "<authors separated by commas, or 未知 if unavailable>",
+    "contribution": "<一句话概括论文核心贡献>",
+    "method_summary": "<简要说明方法、模型、训练策略或实验设置>",
+    "relevance_reason": "<说明这篇论文为什么符合或不符合具身 Agent / VLA / WAM / OPD 方向>",
+    "relevance": <integer from 0 to 10>,
+    "priority": "<High / Medium / Low>"
+}}"""
 
-使用中文回答。直接返回上述 JSON 格式，无需任何额外解释。
-"""
-
-        response = self.model.inference(prompt, temperature=self.temperature)
+        response = self._inference(prompt)
         return response
 
     def process_paper(self, paper, max_retries=5):
         retry_count = 0
-        cache_path = os.path.join(self.cache_dir, f"{paper['arXiv_id']}.json") if self.cache_dir else None
+        cache_path = (
+            os.path.join(self.cache_dir, f"{paper['arXiv_id']}.json")
+            if self.cache_dir
+            else None
+        )
 
         if cache_path and os.path.exists(cache_path):
             try:
@@ -151,7 +171,6 @@ class ArxivDaily:
                 abstract = paper["abstract"]
                 response = self.get_response(title, abstract)
                 response = response.strip("```").strip("json").strip()
-                # Try to extract JSON from response
                 if "{" in response:
                     response = response[response.index("{"):]
                 if "}" in response:
@@ -178,7 +197,12 @@ class ArxivDaily:
                     try:
                         with self.lock:
                             with open(cache_path, "w", encoding="utf-8") as cache_file:
-                                json.dump(result, cache_file, ensure_ascii=False, indent=2)
+                                json.dump(
+                                    result,
+                                    cache_file,
+                                    ensure_ascii=False,
+                                    indent=2,
+                                )
                     except OSError as write_error:
                         print(f"Cache write failed {cache_path}: {write_error}")
                 return result
@@ -208,7 +232,12 @@ class ArxivDaily:
                         try:
                             with self.lock:
                                 with open(cache_path, "w", encoding="utf-8") as cache_file:
-                                    json.dump(result, cache_file, ensure_ascii=False, indent=2)
+                                    json.dump(
+                                        result,
+                                        cache_file,
+                                        ensure_ascii=False,
+                                        indent=2,
+                                    )
                         except OSError:
                             pass
                     return result
@@ -243,14 +272,12 @@ class ArxivDaily:
 
         recommendations_ = sorted(
             recommendations_, key=lambda x: x["relevance_score"], reverse=True
-       )[: self.max_paper_num]
+        )[: self.max_paper_num]
 
-        # Save pushed IDs to history
         for r in recommendations_:
             self.pushed_ids.add(r["arXiv_id"])
         self._save_history()
 
-        # Save recommendation to markdown file
         if self.save_dir:
             current_time = self.run_datetime
             save_path = os.path.join(
@@ -260,14 +287,17 @@ class ArxivDaily:
             with open(save_path, "w", encoding="utf-8") as f:
                 f.write("# Daily arXiv Papers\n")
                 f.write(f"## Date: {current_time.strftime('%Y-%m-%d')}\n")
-                f.write(f"## Papers:\n")
+                f.write("## Papers:\n")
                 for i, paper in enumerate(recommendations_):
                     f.write(f"### {i + 1}. {paper.get('chinese_title', paper['title'])}\n")
                     f.write(f"- English: {paper.get('english_title', paper['title'])}\n")
                     f.write(f"- Authors: {paper.get('authors', '未知')}\n")
                     f.write(f"- Contribution: {paper.get('contribution', '')}\n")
                     f.write(f"- Method: {paper.get('method_summary', '')}\n")
-                    f.write(f"- Relevance: {paper['relevance_score']}/10 ({paper.get('priority', 'Medium')})\n")
+                    f.write(
+                        f"- Relevance: {paper['relevance_score']}/10 "
+                        f"({paper.get('priority', 'Medium')})\n"
+                    )
                     f.write(f"- Why: {paper.get('relevance_reason', '')}\n")
                     f.write(f"- PDF: {paper['pdf_url']}\n\n")
 
@@ -277,40 +307,39 @@ class ArxivDaily:
         overview = ""
         for i in range(len(recommendations)):
             p = recommendations[i]
-            overview += f"{i + 1}. {p['title']} - {p.get('contribution', p.get('summary', ''))} (Score: {p['relevance_score']})\n"
+            overview += (
+                f"{i + 1}. {p['title']} - "
+                f"{p.get('contribution', p.get('summary', ''))} "
+                f"(Score: {p['relevance_score']})\n"
+            )
 
         prompt = f"""
-你是一个有帮助的学术研究助手，可以帮助我构建每日论文推荐系统。
-以下是我最近研究领域的描述：
+You are preparing the overview section for a daily arXiv email about embodied agents for robotics.
+
+User research interests:
 {self.description}
 
-以下是我从昨天的 arXiv 爬取的论文，我为你提供了标题和贡献总结：
+Selected papers:
 {overview}
 
-请务必严格按照以下 JSON 结构返回内容，不要添加额外文本或代码块：
+Write the overview for a researcher building embodied Agent systems. Prefer papers about VLA, WAM, OPD/VLA post-training, embodied world models, long-horizon planning, robot manipulation, sim-to-real, real robot deployment, and embodied benchmarks.
+
+Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons and trend summary.
 {{
   "overview": {{
-    "total_scanned": <今日扫描论文总数>,
-    "total_selected": <入选论文数量>,
+    "total_scanned": {self.total_fetched},
+    "total_selected": {len(recommendations)},
     "top3": [
-      {{"title": "<论文标题>", "reason": "<推荐理由>"}}
+      {{"title": "<paper title>", "reason": "<why this is one of the most useful papers for building embodied agents>"}}
     ],
-    "trend_summary": "<今日主题趋势总结，用中文>"
+    "trend_summary": "<summarize today's embodied agent research trends and explain how they relate to VLA/WAM/OPD, planning, world models, robot deployment, or benchmarks>"
   }}
-}}
-
-任务要求：
-1. 统计今日扫描和入选论文数量。
-2. 从入选论文中精选 Top 3 最值得阅读的论文，说明推荐理由。
-3. 总结今日论文体现的整体研究趋势，解释其与我研究兴趣的联系。
-"""
+}}"""
 
         max_retries = 2
         for attempt in range(1, max_retries + 1):
             try:
-                raw_response = self.model.inference(
-                    prompt, temperature=self.temperature
-                )
+                raw_response = self._inference(prompt)
                 cleaned = raw_response.strip()
                 if cleaned.startswith("```"):
                     cleaned = cleaned[3:]
@@ -348,7 +377,11 @@ class ArxivDaily:
 
     def render_email(self, recommendations):
         if self.save_dir:
-            save_file_path = os.path.join(self.save_dir, self.run_date, "arxiv_daily_email.html")
+            save_file_path = os.path.join(
+                self.save_dir,
+                self.run_date,
+                "arxiv_daily_email.html",
+            )
             if os.path.exists(save_file_path):
                 with open(save_file_path, "r", encoding="utf-8") as f:
                     print(f"Email loaded from cache: {save_file_path}")
@@ -381,9 +414,12 @@ class ArxivDaily:
         content = overview + "<br>" + "</br><br>".join(parts) + "</br>"
         email_html = framework.replace("__CONTENT__", content)
 
-        # Save rendered email
         if self.save_dir:
-            save_path = os.path.join(self.save_dir, self.run_date, "arxiv_daily_email.html")
+            save_path = os.path.join(
+                self.save_dir,
+                self.run_date,
+                "arxiv_daily_email.html",
+            )
             os.makedirs(os.path.dirname(save_path), exist_ok=True)
             with open(save_path, "w", encoding="utf-8") as f:
                 f.write(email_html)
@@ -429,28 +465,29 @@ class ArxivDaily:
 
 
 if __name__ == "__main__":
-    categories = ["cs.AI", "cs.CL", "cs.LG", "cs.IR"]
+    categories = ["cs.AI", "cs.RO", "cs.LG", "cs.CV", "cs.CL", "cs.MA", "cs.SY", "cs.HC"]
     max_entries = 100
-    max_paper_num = 50
+    max_paper_num = 20
     provider = "openai"
     model = "glm-4.5-air"
     description = """
-        I am working on the research area of computer vision and natural language processing.
-        Specifically, I am interested in the following fields:
-        1. Object detection
-        2. AIGC (AI Generated Content)
-        3. Multimodal Large Language Models
-
-        I'm not interested in the following fields:
-        1. 3D Vision
-        2. Robotics
-        3. Low-level Vision
+        I am interested in embodied agents, especially VLA, WAM, VLA post-training,
+        long-horizon planning, robot manipulation, sim-to-real, and real-world
+        embodied agent deployment.
     """
 
     arxiv_daily = ArxivDaily(
-        categories, max_entries, max_paper_num, provider, model,
-        "https://open.bigmodel.cn/api/coding/paas/v4", "your-api-key", description,
-        4, 0.3, "./arxiv_history"
+        categories,
+        max_entries,
+        max_paper_num,
+        provider,
+        model,
+        "https://open.bigmodel.cn/api/coding/paas/v4",
+        "your-api-key",
+        description,
+        4,
+        0.3,
+        "./arxiv_history",
     )
     recommendations = arxiv_daily.get_recommendation()
     print(recommendations)
