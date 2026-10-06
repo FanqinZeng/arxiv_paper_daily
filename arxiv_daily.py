@@ -1,4 +1,4 @@
-from llm import *
+﻿from llm import *
 from util.request import get_yesterday_arxiv_papers
 from util.construct_email import *
 from tqdm import tqdm
@@ -114,7 +114,7 @@ class ArxivDaily:
 
     def get_response(self, title, abstract):
         prompt = f"""
-You are an academic paper recommendation assistant. Rank each arXiv paper for a daily reading list about embodied agents for robotics.
+You are an academic paper recommendation assistant. Rank each arXiv paper for a daily reading list about embodied Agent systems, robotics, and RSI-style improvement mechanisms.
 
 User research interests:
 {self.description}
@@ -124,23 +124,30 @@ Title: {title}
 Abstract: {abstract}
 
 Primary target theme:
-Embodied Agent with VLA/WAM/OPD for robotic planning and manipulation. Prioritize papers about embodied agents, Vision-Language-Action models, World Action Models, embodied world models, On-Policy Distillation or VLA post-training, long-horizon task planning, robot manipulation, mobile manipulation, humanoid agents, sim-to-real transfer, robot benchmarks, and real-world robot deployment.
+Embodied-Agent / RSI for robotics. Prioritize concrete mechanisms that connect perception, language understanding, task planning, and physical action, especially systems that improve behavior through execution feedback. Relevant mechanisms include robot execution harnesses, VLA/WAM tool use, robot program synthesis and refinement, failure diagnosis, recovery, skill or memory evolution, context optimization, agent-driven policy learning, VLA post-training, runtime adaptation, embodied world models for planning or recovery, and evaluation that separates standalone policy capability from gains due to agent tools, retries, or recovery.
 
 Scoring rubric:
-- 9-10: Directly useful for embodied agents, VLA, WAM, OPD/post-training, robot planning, or robot manipulation, with strong experiments, real-robot validation, open-source assets, or important benchmark results.
-- 7-8: Highly relevant to robot policies, embodied planning, world models, sim-to-real, affordance learning, embodied perception, or benchmark evaluation.
-- 5-6: Partially relevant and potentially transferable to embodied agents, but not directly evaluated on robotics or embodied interaction.
-- 3-4: Generic agent, VLM/LLM, CV, or RL paper with weak connection to embodied closed-loop action.
-- 0-2: Unrelated to embodied AI, such as pure LLM, medical imaging, finance, recommendation systems, hardware-only optimization, or pure theory.
+- 9-10: Directly useful for embodied Agent / RSI research in robotics, such as execution-feedback improvement, robot program repair, evolving harnesses, skill or memory evolution, agent-driven VLA learning/post-training, recovery loops, or rigorous evaluation of self-improving embodied systems.
+- 7-8: Strongly relevant robotics work on VLA diagnostics, language grounding failures, runtime adaptation, embodied world models, recovery, long-horizon planning, tool-aligned policies, or policy improvement infrastructure, even without a complete multi-round improvement loop.
+- 5-6: Transferable mechanism for embodied agents, such as verifier-guided improvement, program evolution, procedural memory, context optimization, or harness-aware evaluation, but with limited or no robotics evaluation.
+- 3-4: Generic agent, VLM/LLM, CV, RL, dataset, deployment, or foundation-model paper with only a weak connection to robot execution, action, recovery, or improvement.
+- 0-2: Unrelated to embodied Agent / RSI interests, such as pure LLM reasoning, browser/software agents without transferable mechanisms, perception-only work, autonomous-driving-only VLA, medical imaging, finance, recommendation systems, hardware-only optimization, or pure theory.
+
+Evaluation rules:
+- Do not require papers to say "RSI", "recursive self-improvement", or "self-evolving".
+- Do not require model-weight updates; persistent improvements in programs, skills, memories, contexts, monitors, critics, verifiers, or recovery procedures are relevant.
+- Distinguish actual robotics experiments from transferable non-robotics methodology.
+- When evidence is limited to title and abstract, do not invent training details, benchmarks, persistence, or standalone-policy evaluation.
+- Judge acronym matches such as RSI, VLA, and WAM in context instead of treating the acronym alone as evidence.
 
 Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanatory text values.
 {{
-    "chinese_title": "<论文标题的中文翻译>",
+    "chinese_title": "<paper title translated into Chinese>",
     "english_title": "<original English title>",
-    "authors": "<authors separated by commas, or 未知 if unavailable>",
-    "contribution": "<一句话概括论文核心贡献>",
-    "method_summary": "<简要说明方法、模型、训练策略或实验设置>",
-    "relevance_reason": "<说明这篇论文为什么符合或不符合具身 Agent / VLA / WAM / OPD 方向>",
+    "authors": "<authors separated by commas, or unknown if unavailable>",
+    "contribution": "<one-sentence Chinese summary of the core contribution>",
+    "method_summary": "<brief Chinese summary of the method, model, training strategy, evaluation, or agent harness>",
+    "relevance_reason": "<Chinese explanation of why this paper does or does not match embodied Agent / RSI / VLA improvement interests>",
     "relevance": <integer from 0 to 10>,
     "priority": "<High / Medium / Low>"
 }}"""
@@ -183,7 +190,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanat
                     "english_title": response.get("english_title", title),
                     "arXiv_id": paper["arXiv_id"],
                     "abstract": abstract,
-                    "authors": response.get("authors", "未知"),
+                    "authors": response.get("authors", "Unknown"),
                     "contribution": response.get("contribution", ""),
                     "method_summary": response.get("method_summary", ""),
                     "relevance_reason": response.get("relevance_reason", ""),
@@ -218,11 +225,11 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanat
                         "english_title": paper["title"],
                         "arXiv_id": paper["arXiv_id"],
                         "abstract": paper["abstract"],
-                        "authors": "未知",
-                        "contribution": "总结失败",
+                        "authors": "Unknown",
+                        "contribution": "Summary failed",
                         "method_summary": "",
                         "relevance_reason": "",
-                        "summary": "总结失败",
+                        "summary": "Summary failed",
                         "relevance_score": 0,
                         "priority": "Low",
                         "pdf_url": paper.get("pdf_url", ""),
@@ -291,7 +298,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanat
                 for i, paper in enumerate(recommendations_):
                     f.write(f"### {i + 1}. {paper.get('chinese_title', paper['title'])}\n")
                     f.write(f"- English: {paper.get('english_title', paper['title'])}\n")
-                    f.write(f"- Authors: {paper.get('authors', '未知')}\n")
+                    f.write(f"- Authors: {paper.get('authors', 'Unknown')}\n")
                     f.write(f"- Contribution: {paper.get('contribution', '')}\n")
                     f.write(f"- Method: {paper.get('method_summary', '')}\n")
                     f.write(
@@ -314,7 +321,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for all explanat
             )
 
         prompt = f"""
-You are preparing the overview section for a daily arXiv email about embodied agents for robotics.
+You are preparing the overview section for a daily arXiv email about embodied Agent systems, robotics, and RSI-style improvement mechanisms.
 
 User research interests:
 {self.description}
@@ -322,7 +329,7 @@ User research interests:
 Selected papers:
 {overview}
 
-Write the overview for a researcher building embodied Agent systems. Prefer papers about VLA, WAM, OPD/VLA post-training, embodied world models, long-horizon planning, robot manipulation, sim-to-real, real robot deployment, and embodied benchmarks.
+Write the overview for a researcher building embodied Agent / RSI systems for robotics. Prefer papers about robot execution harnesses, execution-feedback-driven improvement, robot program synthesis and repair, skill or memory evolution, agent-driven VLA learning, VLA language grounding diagnostics, runtime adaptation, recovery, embodied world models for planning or recovery, and evaluation that separates standalone policy capability from agent-assisted execution.
 
 Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons and trend summary.
 {{
@@ -330,9 +337,9 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons 
     "total_scanned": {self.total_fetched},
     "total_selected": {len(recommendations)},
     "top3": [
-      {{"title": "<paper title>", "reason": "<why this is one of the most useful papers for building embodied agents>"}}
+      {{"title": "<paper title>", "reason": "<why this is useful for embodied Agent / RSI research, robot execution feedback, policy improvement, recovery, skill evolution, or VLA reliability>"}}
     ],
-    "trend_summary": "<summarize today's embodied agent research trends and explain how they relate to VLA/WAM/OPD, planning, world models, robot deployment, or benchmarks>"
+    "trend_summary": "<summarize today's trends and explain how they relate to embodied Agent / RSI mechanisms, execution feedback, robot harnesses, VLA reliability, policy learning, recovery, world models, or evaluation>"
   }}
 }}"""
 
@@ -363,7 +370,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons 
                     overview_data.get("total_scanned", self.total_fetched),
                     overview_data.get("total_selected", len(recommendations)),
                     overview_data.get("top3", []),
-                    overview_data.get("trend_summary", "暂无趋势信息"),
+                    overview_data.get("trend_summary", "No trend summary available"),
                 )
             except Exception as error:
                 print(f"Overview generation attempt {attempt} failed: {error}")
@@ -372,7 +379,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons 
                         self.total_fetched,
                         len(recommendations),
                         [],
-                        "趋势总结生成失败，请查看下方论文列表。",
+                        "Trend summary generation failed. Please review the paper list below.",
                     )
 
     def render_email(self, recommendations):
@@ -400,7 +407,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons 
                     english_title=p.get("english_title", p["title"]),
                     rate=rate,
                     arxiv_id=p["arXiv_id"],
-                    authors=p.get("authors", "未知"),
+                    authors=p.get("authors", "Unknown"),
                     contribution=p.get("contribution", ""),
                     method_summary=p.get("method_summary", ""),
                     relevance_reason=p.get("relevance_reason", ""),
@@ -465,7 +472,7 @@ Return only valid JSON. Do not wrap it in Markdown. Use Chinese for the reasons 
 
 
 if __name__ == "__main__":
-    categories = ["cs.AI", "cs.RO", "cs.LG", "cs.CV", "cs.CL", "cs.MA", "cs.SY", "cs.HC"]
+    categories = ["cs.RO", "cs.AI", "cs.LG", "cs.CV", "cs.CL", "cs.SE", "cs.PL"]
     max_entries = 100
     max_paper_num = 20
     provider = "openai"

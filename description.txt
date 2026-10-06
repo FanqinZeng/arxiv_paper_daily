@@ -1,47 +1,167 @@
-I am interested in embodied agents, especially agents that combine perception, language understanding, task planning, and physical action in simulated or real robotic environments.
+I am interested in embodied Agent systems for robotics, especially systems that combine perception, language understanding, task planning, and physical action, and improve their behavior through execution feedback.
 
-My main focus is on embodied Agent systems for robotics. I want to track papers about Vision-Language-Action models, World Action Models, world models for embodied AI, long-horizon task planning, robot manipulation, mobile manipulation, humanoid agents, and generalist robot policies.
+My main focus is on research similar to an "Embodied-Agent / RSI" literature collection. Here, RSI is a broad research interest covering self-improving embodied agents, evolving agent harnesses, robot program synthesis and refinement, skill and memory evolution, agent-driven policy learning, and mechanisms that make VLA-based systems more reliable.
 
-I am especially interested in:
-1. Embodied Agent architectures that connect LLMs/VLMs with robot control policies.
-2. Vision-Language-Action (VLA) models for robotic manipulation, mobile manipulation, and generalist robot control.
-3. World Action Models (WAMs), embodied world models, action-conditioned video prediction, and future imagination for robot planning.
-4. On-Policy Distillation (OPD), VLA post-training, offline-to-online robot learning, interactive post-training, and self-improving embodied agents.
-5. Long-horizon embodied task planning, hierarchical planning, skill decomposition, replanning, and closed-loop execution.
-6. Affordance learning, 3D scene understanding, open-vocabulary embodied perception, object-centric perception, and part-level manipulation.
-7. Robot learning datasets, teleoperation data, simulation-to-real transfer, synthetic environments, and benchmark evaluation.
-8. Real-world deployment of embodied agents, including low-latency inference, on-device VLA models, ROS2 integration, safety, and robust policy evaluation.
+Do not require papers to explicitly use the terms "RSI," "recursive self-improvement," or "self-evolving." Also, do not require model-weight updates: improvements stored in executable programs, skill documents, memory, context construction, or recovery procedures are relevant.
 
-I am particularly interested in papers related to:
-- Embodied Agent
-- Embodied AI
-- Vision-Language-Action Model
-- VLA
-- World Action Model
-- WAM
-- Embodied World Model
-- Robot Foundation Model
-- Generalist Robot Policy
-- On-Policy Distillation
-- VLA-OPD
-- Robot Manipulation
-- Mobile Manipulation
-- Humanoid Robot
-- Long-horizon Planning
-- Task and Motion Planning
-- Affordance Learning
-- Sim-to-Real
-- Robot Policy Evaluation
+PRIMARY RESEARCH INTERESTS
 
-I prefer papers that provide:
-1. New architectures for embodied agents.
-2. New VLA or WAM models.
-3. Methods that improve policy learning, post-training, robustness, or generalization.
-4. Strong experiments on embodied benchmarks such as LIBERO, RoboTwin, CALVIN, RLBench, ManiSkill, Habitat, AI2-THOR, ALFRED, BEHAVIOR, Meta-World, RoboSuite, or real robots.
-5. Open-source code, datasets, pretrained models, or reproducible benchmarks.
+1. Embodied Agent architectures and robot execution harnesses
 
-I am less interested in:
-1. Pure large language model papers without embodiment, robotics, action, or environment interaction.
-2. Pure computer vision papers that do not connect to embodied perception or robot action.
-3. Pure reinforcement learning theory without robot or embodied agent experiments.
-4. Medical imaging, autonomous driving-only VLA, recommendation systems, or finance agents unless the method is clearly transferable to embodied agents.
+I am especially interested in systems that connect LLMs or VLMs with robot control policies, including:
+- VLA or WAM models used as callable tools or bounded manipulation skills.
+- Coding agents that generate, execute, debug, or refine robot control programs.
+- Coordination between learned policies, perception tools, geometric reasoning, motion planning, and analytic controllers.
+- Hierarchical task decomposition, policy invocation, progress monitoring, termination, interruption, replanning, and failure recovery.
+- Interfaces that specify when a policy can take control, when it should stop, and how it can resume after recovery.
+- Tool-aligned VLA training that makes policies easier for a high-level Agent to invoke.
+
+Frozen-policy systems are relevant even when they do not perform persistent learning.
+
+2. Execution-feedback-driven improvement of embodied agents
+
+I want to find methods that turn robot execution results into reusable improvements, including:
+- Failure diagnosis and credit assignment from trajectories, images, videos, or execution logs.
+- Iterative robot program repair and repository-level code evolution.
+- Autonomous generation, testing, selection, and refinement of control strategies.
+- Evolution of monitors, critics, verifiers, recovery programs, and execution interfaces.
+- Learning from successful and failed trials across tasks or episodes.
+- Validation, regression testing, rollback, and promotion of improved agent components.
+- Automated robot experimentation, reward verification, reset, and data-collection infrastructure that enables improvement loops.
+
+Both offline program optimization and online interaction are relevant.
+
+3. Skill, memory, and context evolution
+
+I am interested in skills as reusable programs, procedural knowledge, natural-language documents, and rules - not only neural motor primitives.
+
+Relevant topics include:
+- Autonomous skill discovery and reusable failure-repair knowledge.
+- Task-specific memory and cross-task procedural memory.
+- Skill retrieval, selection, composition, refinement, and consolidation.
+- Deduplication, abstraction, merging, pruning, and conflict resolution in skill libraries.
+- Reducing redundant skill documents or rules in an Agent's context.
+- Preserving activation conditions, preconditions, exceptions, termination conditions, and recovery behavior during skill consolidation.
+- Optimizing context construction using execution feedback.
+- Evaluating whether smaller or better-organized skill context preserves task coverage and improves reliability.
+
+Simple document summarization is less relevant unless it is connected to agent behavior or execution-based validation.
+
+4. Agent-driven VLA learning and post-training
+
+I am particularly interested in systems where an Agent helps improve the underlying robot policy, including:
+- Agent-generated demonstrations and success-filtered robot trajectories.
+- Distillation of planning, tool use, recovery, or program execution into VLA policies.
+- On-policy distillation, student-policy rollouts, teacher corrections, and interactive post-training.
+- Autonomous data collection, corrective data generation, and failure-driven curricula.
+- Offline-to-online robot learning and Agent-guided BC or RL.
+- Agents that modify training code, data selection, objectives, or hyperparameters.
+- Repeated cycles of policy evaluation, failure diagnosis, targeted data collection, retraining, and reevaluation.
+- Mutual improvement between the Agent system and its underlying policy.
+
+Give extra priority to papers that evaluate the trained VLA independently of the Agent, or clearly separate policy improvement from gains due to additional tools, retries, or planning.
+
+Do not require a complete multi-round learning loop for inclusion; a well-evaluated one-way transfer from Agent-generated experience to policy weights is also relevant.
+
+5. VLA language grounding, visual bias, and generalization
+
+These papers are relevant even if they do not explicitly study self-improvement.
+
+I am interested in:
+- Visual shortcuts, visual dominance, language neglect, and instruction-following failures in VLAs.
+- Counterfactual instructions and evaluations that change the requested action while keeping the scene fixed.
+- Distinguishing visual robustness from genuine language-conditioned behavior.
+- Disentangling visual action priors from language-conditioned action generation.
+- Counterfactual intervention, action guidance, feature intervention, and causal or mechanistic analysis tied to robot behavior.
+- Training-free inference methods, as well as training-based methods that address these failure modes.
+- Robustness to object swaps, spatial changes, distractors, backgrounds, and instruction changes.
+- Action- or kinematics-aware policy specialization and expert routing when they address a concrete robot-control or generalization problem.
+
+Do not classify a method as training-free merely because its deployed policy is frozen.
+
+6. Runtime adaptation, recovery, and embodied world models
+
+I am interested in:
+- Test-time adaptation, long-horizon policy memory, and context-dependent robot behavior.
+- Learning to use histories of failure and correction.
+- Counterfactual scene reconstruction and policy recovery.
+- World models, WAMs, and action-conditioned prediction used to evaluate candidate actions, anticipate failures, plan recovery, or generate useful training experience.
+- Future imagination grounded in executable robot actions.
+
+Generic video generation or world modeling is lower priority unless it directly supports robot planning, control, recovery, evaluation, or policy learning.
+
+7. Evaluation of embodied Agent systems and self-improvement
+
+Relevant evaluation work includes:
+- Separating model capability from the surrounding Agent harness.
+- Comparing standalone policies with Agent-assisted execution.
+- Distinguishing first-attempt success from success with retries or recovery.
+- Measuring gains under matched interaction, inference, training, or robot-time budgets.
+- Held-out tasks, scenes, instructions, objects, and task compositions.
+- Distinguishing development-time optimization from final evaluation.
+- Measuring persistence, transfer, forgetting, and regression across improvement rounds.
+- Benchmarks that expose language-grounding failures, brittle planning, skill interference, or unreliable recovery.
+
+I value experiments on LIBERO, LIBERO-Pro, RoboTwin, CALVIN, RLBench, ManiSkill, RoboCasa, BEHAVIOR, Meta-World, RoboSuite, mobile-manipulation environments, and real robots. These are examples, not a required benchmark whitelist.
+
+REFERENCE PAPERS THAT DEFINE MY INTERESTS
+
+Core embodied Agent systems and improvement mechanisms:
+- ASPIRE: Agentic /Skills Discovery for Robotics
+- Harness VLA
+- HarnessPAI
+- Zetta
+- RHO: Your Coding Agent Is Secretly a Roboticist
+- CaP-X
+- Self-Evolving Embodied Agents via Skill-Harness Evolution (SHAPER)
+- ENPIRE
+- Practice Makes Policies (HERO)
+- Towards Long-horizon Embodied Agents with Tool-Aligned Vision-Language-Action Models
+- VoLo
+
+Related policy diagnostics, adaptation, and supporting mechanisms:
+- When Vision Overrides Language
+- LangGap
+- LangForce
+- CofactVLA
+- Imagining Recovery
+- RoboTTT
+- Route by Kinematics, Act by Observation
+
+These are semantic examples, not an exact-title whitelist. Include papers with similar mechanisms even when they use different terminology.
+
+LIMITED INTEREST IN NON-ROBOTICS AGENT PAPERS
+
+A small secondary category may include non-embodied Agent research when it provides a concrete, transferable mechanism for:
+- Executable program evolution.
+- Procedural skill discovery and consolidation.
+- Memory or context optimization.
+- Verifier-guided improvement.
+- Harness-aware evaluation and controlled attribution.
+
+Examples of this secondary interest include AlphaApollo and Reasoning Is More Than the Model.
+
+Clearly distinguish these methodological references from papers with actual robotics experiments. Generic LLM reasoning, browser agents, software agents, or prompt optimization should not be included solely because they mention "agents" or "self-improvement."
+
+LOWER-PRIORITY OR EXCLUDED TOPICS
+
+Deprioritize:
+- Generic VLA or robot foundation model scaling without a clear connection to the mechanisms above.
+- Perception-only, affordance-only, or 3D understanding papers without a concrete link to robot decisions or action.
+- Generic datasets, hardware, ROS integration, inference compression, or deployment engineering without relevant Agent or policy-improvement contributions.
+- World models evaluated only on visual prediction quality.
+- Pure RL theory without relevant embodied experiments.
+- Autonomous-driving-only VLA, medical imaging, recommendation, and finance research.
+
+RELEVANCE GUIDELINES
+
+- Prioritize concrete mechanisms over fashionable terminology.
+- Robotics includes physical simulation as well as real robots.
+- Coding agents are highly relevant when their code controls or improves robots.
+- Do not require real-world experiments, online learning, zero human demonstrations, frozen weights, or open-source release.
+- Prefer reproducible experiments, code, datasets, and checkpoints, but treat their availability as a bonus rather than a mandatory filter.
+- Keep runtime orchestration, within-episode adaptation, persistent external-memory updates, offline policy training, and multi-round improvement conceptually separate.
+- Papers addressing only one of my core research interests can still be highly relevant; do not require all interests to be satisfied.
+- When evidence is limited to the title and abstract, do not invent training details, benchmark results, persistence, or standalone-policy evaluation.
+- Judge acronym matches such as RSI, VLA, and WAM in context rather than treating the acronym alone as evidence of relevance.
+- Rank direct embodied Agent and improvement mechanisms highest, closely related VLA diagnostics and adaptation methods next, and transferable non-embodied methods as a limited secondary category.

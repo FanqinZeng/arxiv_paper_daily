@@ -9,7 +9,7 @@ if __name__ == "__main__":
         "--categories",
         nargs="+",
         help="arXiv categories",
-        default=["cs.AI", "cs.RO", "cs.LG", "cs.CV", "cs.CL", "cs.MA", "cs.SY", "cs.HC"],
+        default=["cs.RO", "cs.AI", "cs.LG", "cs.CV", "cs.CL", "cs.SE", "cs.PL"],
     )
     parser.add_argument("--max_paper_num", type=int, help="max_paper_num", default=20)
     parser.add_argument(
